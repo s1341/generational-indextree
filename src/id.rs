@@ -455,10 +455,7 @@ impl NodeId {
     ///
     /// Panics if:
     ///
-    /// * the given new child is `self`, or
-    /// * the current node or the given new child was already [`remove`]d.
-    ///
-    /// To check if the node is removed or not, use [`Node::is_removed()`].
+    /// * the given new child is `self`
     ///
     /// # Examples
     ///
@@ -502,8 +499,6 @@ impl NodeId {
     ///   `self`.
     /// * Returns [`NodeError::Removed`] error if the given new child or `self`
     ///   is [`remove`]d.
-    ///
-    /// To check if the node is removed or not, use [`Node::is_removed()`].
     ///
     /// # Examples
     ///
@@ -549,8 +544,6 @@ impl NodeId {
     /// * the given new child is `self`, or
     /// * the current node or the given new child was already [`remove`]d.
     ///
-    /// To check if the node is removed or not, use [`Node::is_removed()`].
-    ///
     /// # Examples
     ///
     /// ```
@@ -594,8 +587,6 @@ impl NodeId {
     /// * Returns [`NodeError::Removed`] error if the given new child or `self`
     ///   is [`remove`]d.
     ///
-    /// To check if the node is removed or not, use [`Node::is_removed()`].
-    ///
     /// # Examples
     ///
     /// ```
@@ -637,8 +628,6 @@ impl NodeId {
     ///
     /// * the given new sibling is `self`, or
     /// * the current node or the given new sibling was already [`remove`]d.
-    ///
-    /// To check if the node is removed or not, use [`Node::is_removed()`].
     ///
     /// # Examples
     ///
@@ -689,8 +678,6 @@ impl NodeId {
     /// * Returns [`NodeError::Removed`] error if the given new sibling or
     ///   `self` is [`remove`]d.
     ///
-    /// To check if the node is removed or not, use [`Node::is_removed()`].
-    ///
     /// # Examples
     ///
     /// ```
@@ -738,8 +725,6 @@ impl NodeId {
     /// * the given new sibling is `self`, or
     /// * the current node or the given new sibling was already [`remove`]d.
     ///
-    /// To check if the node is removed or not, use [`Node::is_removed()`].
-    ///
     /// # Examples
     ///
     /// ```
@@ -773,7 +758,6 @@ impl NodeId {
     /// assert_eq!(iter.next(), None);
     /// ```
     ///
-    /// [`Node::is_removed()`]: struct.Node.html#method.is_removed
     /// [`remove`]: struct.NodeId.html#method.remove
     pub fn insert_before<T>(self, new_sibling: NodeId, arena: &mut Arena<T>) {
         self.checked_insert_before(new_sibling, arena)
@@ -789,8 +773,6 @@ impl NodeId {
     /// * Returns [`NodeError::Removed`] error if the given new sibling or
     ///   `self` is [`remove`]d.
     ///
-    /// To check if the node is removed or not, use [`Node::is_removed()`].
-    ///
     /// # Examples
     ///
     /// ```
@@ -803,7 +785,6 @@ impl NodeId {
     /// assert!(n1.checked_insert_before(n2, &mut arena).is_ok());
     /// ```
     ///
-    /// [`Node::is_removed()`]: struct.Node.html#method.is_removed
     /// [`NodeError::InsertBeforeSelf`]: enum.NodeError.html#variant.InsertBeforeSelf
     /// [`NodeError::Removed`]: enum.NodeError.html#variant.Removed
     /// [`remove`]: struct.NodeId.html#method.remove
@@ -837,8 +818,6 @@ impl NodeId {
     /// Please note that the node will not be removed from the internal arena
     /// storage, but marked as `removed`. Traversing the arena returns a
     /// plain iterator and contains removed elements too.
-    ///
-    /// To check if the node is removed or not, use [`Node::is_removed()`].
     ///
     /// # Examples
     ///
@@ -876,7 +855,6 @@ impl NodeId {
     /// assert_eq!(iter.next(), None);
     /// ```
     ///
-    /// [`Node::is_removed()`]: struct.Node.html#method.is_removed
     pub fn remove<T>(self, arena: &mut Arena<T>) {
         debug_assert_triangle_nodes!(
             arena,

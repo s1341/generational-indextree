@@ -22,7 +22,6 @@ pub struct Node<T> {
     pub(crate) next_sibling: Option<NodeId>,
     pub(crate) first_child: Option<NodeId>,
     pub(crate) last_child: Option<NodeId>,
-//    pub(crate) removed: bool,
     /// The actual data which will be stored within the tree.
     pub(crate) data: T,
 }

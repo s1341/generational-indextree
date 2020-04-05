@@ -1,23 +1,17 @@
 # indextree
 
-[![Build status](https://circleci.com/gh/saschagrunert/indextree.svg?style=shield)](https://circleci.com/gh/saschagrunert/indextree)
-[![Build Status](https://travis-ci.org/saschagrunert/indextree.svg)](https://travis-ci.org/saschagrunert/indextree)
-[![Build status](https://ci.appveyor.com/api/projects/status/byraapuh9py02us0?svg=true)](https://ci.appveyor.com/project/saschagrunert/indextree)
-[![Coverage](https://codecov.io/gh/saschagrunert/indextree/branch/master/graph/badge.svg)](https://codecov.io/gh/saschagrunert/indextree)
-[![Dependency Status](https://deps.rs/repo/github/saschagrunert/indextree/status.svg)](https://deps.rs/repo/github/saschagrunert/indextree)
-[![Doc indextree](https://img.shields.io/badge/master_doc-indextree-blue.svg)](https://saschagrunert.github.io/indextree/doc/indextree)
-[![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/saschagrunert/indextree/blob/master/LICENSE)
-[![Crates.io](https://img.shields.io/crates/v/indextree.svg)](https://crates.io/crates/indextree)
-[![doc.rs](https://docs.rs/indextree/badge.svg)](https://docs.rs/indextree)
+[![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://gitlab.com/barry.van.acker/generational-indextree/-/blob/master/LICENSE)
+[![Crates.io](https://img.shields.io/crates/v/generational-indextree.svg)](https://crates.io/crates/generational-indextree)
+[![doc.rs](https://docs.rs/generational-indextree/badge.svg)](https://docs.rs/generational-indextree)
 
-## Arena based tree structure with multithreading support
+## Arena based tree structure with support for removing nodes
 
-This arena tree structure is using just a single `Vec` and numerical identifiers
-(indices in the vector) instead of reference counted pointers. This means there
+This arena tree structure is using just a single `GenerationalArena` and indices 
+instead of reference counted pointers. This means there
 is no `RefCell` and mutability is handled in a way much more idiomatic to Rust
 through unique (&mut) access to the arena. The tree can be sent or shared across
-threads like a `Vec`. This enables general multiprocessing support like
-parallel tree traversals.
+threads like a `Vec`. This enables general multiprocessing support like parallel
+tree traversals.
 
 ### Example usage
 

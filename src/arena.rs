@@ -52,10 +52,7 @@ impl<T> Arena<T> {
     /// assert_eq!(*arena[foo].get(), "foo");
     /// ```
     pub fn new_node(&mut self, data: T) -> NodeId {
-        // let next_index1 = NonZeroUsize::new(self.nodes.len().wrapping_add(1))
-        //     .expect("Too many nodes in the arena");
         NodeId::from_index(self.nodes.insert(Node::new(data)))
-        // NodeId::from_non_zero_usize(next_index1)
     }
 
     /// Counts the number of nodes in arena and returns it.
@@ -149,9 +146,6 @@ impl<T> Arena<T> {
 
     /// Returns an iterator of all nodes in the arena in storage-order.
     ///
-    /// Note that this iterator returns also removed elements, which can be
-    /// tested with the [`is_removed()`] method on the node.
-    ///
     /// # Examples
     ///
     /// ```
@@ -177,23 +171,8 @@ impl<T> Arena<T> {
     /// assert_eq!(iter.next().map(|node| *node.get()), Some("foo"));
     /// assert_eq!(iter.next().map(|node| *node.get()), None);
     /// ```
-    ///
-    /// [`is_removed()`]: struct.Node.html#method.is_removed
     pub fn iter(&self) -> impl Iterator<Item = &Node<T>> {
         self.nodes.iter().map(|pair|pair.1)
-    }
-}
-
-#[cfg(feature = "par_iter")]
-impl<T: Sync> Arena<T> {
-    /// Returns an parallel iterator over the whole arena.
-    ///
-    /// Note that this iterator returns also removed elements, which can be
-    /// tested with the [`is_removed()`] method on the node.
-    ///
-    /// [`is_removed()`]: struct.Node.html#method.is_removed
-    pub fn par_iter(&self) -> rayon::slice::Iter<'_, Node<T>> {
-        self.nodes.par_iter()
     }
 }
 
