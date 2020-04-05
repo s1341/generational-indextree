@@ -1,6 +1,6 @@
 //! Insertion errors.
 
-use indextree::Arena;
+use generational_indextree::Arena;
 
 #[test]
 fn append_self() {

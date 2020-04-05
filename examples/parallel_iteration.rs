@@ -1,4 +1,4 @@
-use indextree::*;
+use generational_indextree::*;
 use rayon::prelude::*;
 
 pub fn main() {

@@ -15,3 +15,5 @@ Session.vim
 tags
 # backup files from cargo fmt
 *.bk
+
+.idea/

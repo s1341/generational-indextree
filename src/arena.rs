@@ -1,7 +1,6 @@
 //! Arena.
 
-#[cfg(not(feature = "std"))]
-use alloc::vec::Vec;
+use generational_arena::Arena as GenerationalArena;
 
 #[cfg(not(feature = "std"))]
 use core::{
@@ -17,19 +16,18 @@ use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "std")]
 use std::{
-    num::NonZeroUsize,
     ops::{Index, IndexMut},
 };
 
 use crate::{Node, NodeId};
 
-#[derive(PartialEq, Eq, Clone, Debug)]
+#[derive(Clone, Debug)]
 #[cfg_attr(feature = "deser", derive(Deserialize, Serialize))]
 /// An `Arena` structure containing certain [`Node`]s.
 ///
 /// [`Node`]: struct.Node.html
 pub struct Arena<T> {
-    nodes: Vec<Node<T>>,
+    pub(crate) nodes: GenerationalArena<Node<T>>,
 }
 
 impl<T> Arena<T> {
@@ -47,17 +45,17 @@ impl<T> Arena<T> {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// let mut arena = Arena::new();
     /// let foo = arena.new_node("foo");
     ///
     /// assert_eq!(*arena[foo].get(), "foo");
     /// ```
     pub fn new_node(&mut self, data: T) -> NodeId {
-        let next_index1 = NonZeroUsize::new(self.nodes.len().wrapping_add(1))
-            .expect("Too many nodes in the arena");
-        self.nodes.push(Node::new(data));
-        NodeId::from_non_zero_usize(next_index1)
+        // let next_index1 = NonZeroUsize::new(self.nodes.len().wrapping_add(1))
+        //     .expect("Too many nodes in the arena");
+        NodeId::from_index(self.nodes.insert(Node::new(data)))
+        // NodeId::from_non_zero_usize(next_index1)
     }
 
     /// Counts the number of nodes in arena and returns it.
@@ -65,14 +63,14 @@ impl<T> Arena<T> {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// let mut arena = Arena::new();
     /// let foo = arena.new_node("foo");
     /// let _bar = arena.new_node("bar");
     /// assert_eq!(arena.count(), 2);
     ///
     /// foo.remove(&mut arena);
-    /// assert_eq!(arena.count(), 2);
+    /// assert_eq!(arena.count(), 1);
     /// ```
     pub fn count(&self) -> usize {
         self.nodes.len()
@@ -83,7 +81,7 @@ impl<T> Arena<T> {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// let mut arena = Arena::new();
     /// assert!(arena.is_empty());
     ///
@@ -91,7 +89,7 @@ impl<T> Arena<T> {
     /// assert!(!arena.is_empty());
     ///
     /// foo.remove(&mut arena);
-    /// assert!(!arena.is_empty());
+    /// assert!(arena.is_empty());
     /// ```
     pub fn is_empty(&self) -> bool {
         self.count() == 0
@@ -104,7 +102,7 @@ impl<T> Arena<T> {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::{Arena, NodeId};
+    /// # use generational_indextree::{Arena, NodeId};
     /// let mut arena = Arena::new();
     /// let foo = arena.new_node("foo");
     /// assert_eq!(arena.get(foo).map(|node| *node.get()), Some("foo"));
@@ -114,7 +112,7 @@ impl<T> Arena<T> {
     /// the arena.
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// let mut arena = Arena::new();
     /// let foo = arena.new_node("foo");
     /// let bar = arena.new_node("bar");
@@ -126,7 +124,7 @@ impl<T> Arena<T> {
     /// assert!(another_arena.get(bar).is_none());
     /// ```
     pub fn get(&self, id: NodeId) -> Option<&Node<T>> {
-        self.nodes.get(id.index0())
+        self.nodes.get(id.get_index())
     }
 
     /// Returns a mutable reference to the node with the given id if in the
@@ -137,7 +135,7 @@ impl<T> Arena<T> {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::{Arena, NodeId};
+    /// # use generational_indextree::{Arena, NodeId};
     /// let mut arena = Arena::new();
     /// let foo = arena.new_node("foo");
     /// assert_eq!(arena.get(foo).map(|node| *node.get()), Some("foo"));
@@ -146,7 +144,7 @@ impl<T> Arena<T> {
     /// assert_eq!(arena.get(foo).map(|node| *node.get()), Some("FOO!"));
     /// ```
     pub fn get_mut(&mut self, id: NodeId) -> Option<&mut Node<T>> {
-        self.nodes.get_mut(id.index0())
+        self.nodes.get_mut(id.get_index())
     }
 
     /// Returns an iterator of all nodes in the arena in storage-order.
@@ -157,7 +155,7 @@ impl<T> Arena<T> {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// let mut arena = Arena::new();
     /// let _foo = arena.new_node("foo");
     /// let _bar = arena.new_node("bar");
@@ -169,21 +167,20 @@ impl<T> Arena<T> {
     /// ```
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// let mut arena = Arena::new();
     /// let _foo = arena.new_node("foo");
     /// let bar = arena.new_node("bar");
     /// bar.remove(&mut arena);
     ///
     /// let mut iter = arena.iter();
-    /// assert_eq!(iter.next().map(|node| (*node.get(), node.is_removed())), Some(("foo", false)));
-    /// assert_eq!(iter.next().map(|node| (*node.get(), node.is_removed())), Some(("bar", true)));
-    /// assert_eq!(iter.next().map(|node| (*node.get(), node.is_removed())), None);
+    /// assert_eq!(iter.next().map(|node| *node.get()), Some("foo"));
+    /// assert_eq!(iter.next().map(|node| *node.get()), None);
     /// ```
     ///
     /// [`is_removed()`]: struct.Node.html#method.is_removed
     pub fn iter(&self) -> impl Iterator<Item = &Node<T>> {
-        self.nodes.iter()
+        self.nodes.iter().map(|pair|pair.1)
     }
 }
 
@@ -202,7 +199,7 @@ impl<T: Sync> Arena<T> {
 
 impl<T> Default for Arena<T> {
     fn default() -> Self {
-        Self { nodes: Vec::new() }
+        Self { nodes: GenerationalArena::new() }
     }
 }
 
@@ -210,12 +207,32 @@ impl<T> Index<NodeId> for Arena<T> {
     type Output = Node<T>;
 
     fn index(&self, node: NodeId) -> &Node<T> {
-        &self.nodes[node.index0()]
+        &self.nodes[node.get_index()]
     }
 }
 
 impl<T> IndexMut<NodeId> for Arena<T> {
     fn index_mut(&mut self, node: NodeId) -> &mut Node<T> {
-        &mut self.nodes[node.index0()]
+        &mut self.nodes[node.get_index()]
     }
 }
+
+impl<T: PartialEq> PartialEq for Arena<T>
+{
+    fn eq(&self, other: &Self) -> bool {
+        let mut equal = self.nodes.len() == other.nodes.len();
+        let mut self_iter = self.iter();
+        let mut other_iter = other.iter();
+        while equal {
+            let lhs = self_iter.next();
+            let rhs = other_iter.next();
+            equal = lhs == rhs;
+            if lhs.is_none() {
+                break;
+            }
+        }
+        equal
+    }
+}
+
+impl<T: PartialEq> Eq for Arena<T> {}

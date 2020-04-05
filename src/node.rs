@@ -22,7 +22,7 @@ pub struct Node<T> {
     pub(crate) next_sibling: Option<NodeId>,
     pub(crate) first_child: Option<NodeId>,
     pub(crate) last_child: Option<NodeId>,
-    pub(crate) removed: bool,
+//    pub(crate) removed: bool,
     /// The actual data which will be stored within the tree.
     pub(crate) data: T,
 }
@@ -46,7 +46,6 @@ impl<T> Node<T> {
             next_sibling: None,
             first_child: None,
             last_child: None,
-            removed: false,
             data,
         }
     }
@@ -57,7 +56,7 @@ impl<T> Node<T> {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -85,7 +84,7 @@ impl<T> Node<T> {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -113,7 +112,7 @@ impl<T> Node<T> {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -142,7 +141,7 @@ impl<T> Node<T> {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -166,7 +165,7 @@ impl<T> Node<T> {
     /// are not siblings by default.
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// let mut arena = Arena::new();
     /// let n1 = arena.new_node("1");
     /// let n2 = arena.new_node("2");
@@ -196,7 +195,7 @@ impl<T> Node<T> {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -220,7 +219,7 @@ impl<T> Node<T> {
     /// are not siblings by default.
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// let mut arena = Arena::new();
     /// let n1 = arena.new_node("1");
     /// let n2 = arena.new_node("2");
@@ -242,44 +241,6 @@ impl<T> Node<T> {
     /// ```
     pub fn next_sibling(&self) -> Option<NodeId> {
         self.next_sibling
-    }
-
-    /// Checks if the node is marked as removed.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use indextree::Arena;
-    /// # let mut arena = Arena::new();
-    /// # let n1 = arena.new_node("1");
-    /// # let n1_1 = arena.new_node("1_1");
-    /// # n1.append(n1_1, &mut arena);
-    /// # let n1_2 = arena.new_node("1_2");
-    /// # n1.append(n1_2, &mut arena);
-    /// # let n1_3 = arena.new_node("1_3");
-    /// # n1.append(n1_3, &mut arena);
-    /// // arena
-    /// // `-- 1
-    /// //     |-- 1_1
-    /// //     |-- 1_2 *
-    /// //     `-- 1_3
-    /// assert_eq!(arena[n1_1].next_sibling(), Some(n1_2));
-    /// assert_eq!(arena[n1_2].parent(), Some(n1));
-    /// assert!(!arena[n1_2].is_removed());
-    /// assert_eq!(arena[n1_3].previous_sibling(), Some(n1_2));
-    ///
-    /// n1_2.remove(&mut arena);
-    /// // arena
-    /// // `-- 1
-    /// //     |-- 1_1
-    /// //     `-- 1_3
-    /// assert_eq!(arena[n1_1].next_sibling(), Some(n1_3));
-    /// assert_eq!(arena[n1_2].parent(), None);
-    /// assert!(arena[n1_2].is_removed());
-    /// assert_eq!(arena[n1_3].previous_sibling(), Some(n1_1));
-    /// ```
-    pub fn is_removed(&self) -> bool {
-        self.removed
     }
 
     /// Checks if the node is detached.

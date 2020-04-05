@@ -1,4 +1,4 @@
-use indextree::Arena;
+use generational_indextree::Arena;
 
 pub fn main() {
     // Create a new arena

@@ -22,7 +22,7 @@ parallel tree traversals.
 ### Example usage
 
 ```rust
-use indextree::Arena;
+use generational_indextree::Arena;
 
 // Create a new arena
 let arena = &mut Arena::new();

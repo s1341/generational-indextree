@@ -1,17 +1,17 @@
 //! Node ID.
 
 #[cfg(not(feature = "std"))]
-use core::{fmt, num::NonZeroUsize};
+use core::fmt;
+#[cfg(feature = "std")]
+use std::fmt;
 
+use generational_arena::Index;
 #[cfg(feature = "deser")]
 use serde::{Deserialize, Serialize};
 
-#[cfg(feature = "std")]
-use std::{fmt, num::NonZeroUsize};
-
 use crate::{
-    relations::insert_with_neighbors, siblings_range::SiblingsRange, Ancestors, Arena, Children,
-    Descendants, FollowingSiblings, NodeError, PrecedingSiblings, ReverseChildren, ReverseTraverse,
+    Ancestors, Arena, Children, Descendants, FollowingSiblings,
+    NodeError, PrecedingSiblings, relations::insert_with_neighbors, ReverseChildren, ReverseTraverse, siblings_range::SiblingsRange,
     Traverse,
 };
 
@@ -24,27 +24,24 @@ use crate::{
 /// [`Arena`]: struct.Arena.html
 /// [`Node`]: struct.Node.html
 pub struct NodeId {
-    /// One-based index.
-    index1: NonZeroUsize,
+    index: Index,
 }
 
 impl fmt::Display for NodeId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.index1)
+        write!(f, "{:?}", self.index)
     }
 }
 
 impl NodeId {
-    /// Returns zero-based index.
-    pub(crate) fn index0(self) -> usize {
-        // This is totally safe because `self.index1 >= 1` is guaranteed by
-        // `NonZeroUsize` type.
-        self.index1.get() - 1
+    /// Returns index.
+    pub(crate) fn get_index(self) -> Index {
+        self.index
     }
 
-    /// Creates a new `NodeId` from the given one-based index.
-    pub(crate) fn from_non_zero_usize(index1: NonZeroUsize) -> Self {
-        NodeId { index1 }
+    /// Creates a new `NodeId` from the given index.
+    pub(crate) fn from_index(index: Index) -> Self {
+        NodeId { index }
     }
 
     /// Returns an iterator of references to this node and its ancestors.
@@ -55,7 +52,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -98,7 +95,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -137,7 +134,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -172,7 +169,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -207,7 +204,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -246,7 +243,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -289,7 +286,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::{Arena, NodeEdge};
+    /// # use generational_indextree::{Arena, NodeEdge};
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -331,7 +328,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::{Arena, NodeEdge};
+    /// # use generational_indextree::{Arena, NodeEdge};
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -365,7 +362,7 @@ impl NodeId {
     /// ```
     ///
     /// ```
-    /// # use indextree::{Arena, NodeEdge};
+    /// # use generational_indextree::{Arena, NodeEdge};
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -398,7 +395,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::{Arena, NodeEdge};
+    /// # use generational_indextree::{Arena, NodeEdge};
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -466,7 +463,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// let mut arena = Arena::new();
     /// let n1 = arena.new_node("1");
     /// let n1_1 = arena.new_node("1_1");
@@ -511,7 +508,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// let mut arena = Arena::new();
     /// let n1 = arena.new_node("1");
     /// assert!(n1.checked_append(n1, &mut arena).is_err());
@@ -532,7 +529,8 @@ impl NodeId {
         if new_child == self {
             return Err(NodeError::AppendSelf);
         }
-        if arena[self].is_removed() || arena[new_child].is_removed() {
+        if !arena.nodes.contains(self.index) || !arena.nodes.contains(new_child.index) {
+            // if arena[self].is_removed() || arena[new_child].is_removed() {
             return Err(NodeError::Removed);
         }
         new_child.detach(arena);
@@ -556,7 +554,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// let mut arena = Arena::new();
     /// let n1 = arena.new_node("1");
     /// let n1_1 = arena.new_node("1_1");
@@ -601,7 +599,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// let mut arena = Arena::new();
     /// let n1 = arena.new_node("1");
     /// assert!(n1.checked_prepend(n1, &mut arena).is_err());
@@ -622,7 +620,7 @@ impl NodeId {
         if new_child == self {
             return Err(NodeError::PrependSelf);
         }
-        if arena[self].is_removed() || arena[new_child].is_removed() {
+        if !arena.nodes.contains(self.index) || !arena.nodes.contains(new_child.index) {
             return Err(NodeError::Removed);
         }
         insert_with_neighbors(arena, new_child, Some(self), None, arena[self].first_child)
@@ -645,7 +643,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -696,7 +694,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// let mut arena = Arena::new();
     /// let n1 = arena.new_node("1");
     /// assert!(n1.checked_insert_after(n1, &mut arena).is_err());
@@ -717,7 +715,7 @@ impl NodeId {
         if new_sibling == self {
             return Err(NodeError::InsertAfterSelf);
         }
-        if arena[self].is_removed() || arena[new_sibling].is_removed() {
+        if !arena.nodes.contains(self.index) || !arena.nodes.contains(new_sibling.index) {
             return Err(NodeError::Removed);
         }
         new_sibling.detach(arena);
@@ -745,7 +743,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// let mut arena = Arena::new();
     /// let n1 = arena.new_node("1");
     /// let n1_1 = arena.new_node("1_1");
@@ -796,7 +794,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// let mut arena = Arena::new();
     /// let n1 = arena.new_node("1");
     /// assert!(n1.checked_insert_before(n1, &mut arena).is_err());
@@ -817,7 +815,7 @@ impl NodeId {
         if new_sibling == self {
             return Err(NodeError::InsertBeforeSelf);
         }
-        if arena[self].is_removed() || arena[new_sibling].is_removed() {
+        if !arena.nodes.contains(self.index) || !arena.nodes.contains(new_sibling.index) {
             return Err(NodeError::Removed);
         }
         new_sibling.detach(arena);
@@ -845,7 +843,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -915,7 +913,7 @@ impl NodeId {
                 .transplant(arena, parent, previous_sibling, next_sibling)
                 .expect("Should never fail: neighbors and children must be consistent");
         }
-        arena[self].removed = true;
         debug_assert!(arena[self].is_detached());
+        arena.nodes.remove(self.index);
     }
 }
