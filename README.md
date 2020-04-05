@@ -1,4 +1,4 @@
-# indextree
+# generational-indextree
 
 [![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://gitlab.com/barry.van.acker/generational-indextree/-/blob/master/LICENSE)
 [![Crates.io](https://img.shields.io/crates/v/generational-indextree.svg)](https://crates.io/crates/generational-indextree)
@@ -12,6 +12,18 @@ is no `RefCell` and mutability is handled in a way much more idiomatic to Rust
 through unique (&mut) access to the arena. The tree can be sent or shared across
 threads like a `Vec`. This enables general multiprocessing support like parallel
 tree traversals.
+
+## Credits
+
+This crate is a fork of the indextree crate, but with a generational arena to store the nodes instead of a Vec. This
+enables us to remove nodes and use the vacant spots to insert new nodes, without suffering from the ABA problem, as 
+explained in the generational-arena crate.
+
+We do sacrifice the rayon support in indextree in favor of the improved remove node api.
+
+This package was forked from the excelent [https://github.com/saschagrunert/indextree](indextree) crate.
+The backing store was replaced by [https://github.com/fitzgen/generational-arena](generational-arena), to improve
+support for removing nodes and reusing the space.
 
 ### Example usage
 
