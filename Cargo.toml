@@ -1,6 +1,6 @@
 [package]
 name = "generational-indextree"
-version = "1.0.1"
+version = "1.0.2"
 license = "MIT"
 readme = "README.md"
 keywords = ["tree", "arena", "index", "indextree", "generational"]
@@ -19,7 +19,7 @@ std = []
 
 [dependencies]
 generational-arena = "0.2.7"
-serde = { version = "1.0.90", features = ["derive"], optional = true }
+serde = { version = "1.0.106", features = ["derive"], optional = true }
 
 [[example]]
 name = "simple"

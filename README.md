@@ -3,6 +3,7 @@
 [![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://gitlab.com/barry.van.acker/generational-indextree/-/blob/master/LICENSE)
 [![Crates.io](https://img.shields.io/crates/v/generational-indextree.svg)](https://crates.io/crates/generational-indextree)
 [![doc.rs](https://docs.rs/generational-indextree/badge.svg)](https://docs.rs/generational-indextree)
+[![dependency status](https://deps.rs/repo/gitlab/barry.van.acker/generational-indextree/status.svg)](https://deps.rs/repo/gitlab/barry.van.acker/generational-indextree)
 
 ## Arena based tree structure with support for removing nodes
 
