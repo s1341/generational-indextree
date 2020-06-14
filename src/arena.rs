@@ -1,23 +1,21 @@
 //! Arena.
 
-use generational_arena::Arena as GenerationalArena;
-
 #[cfg(not(feature = "std"))]
 use core::{
     num::NonZeroUsize,
     ops::{Index, IndexMut},
 };
-
-#[cfg(feature = "par_iter")]
-use rayon::prelude::*;
-
-#[cfg(feature = "deser")]
-use serde::{Deserialize, Serialize};
-
 #[cfg(feature = "std")]
 use std::{
     ops::{Index, IndexMut},
 };
+
+use generational_arena::Arena as GenerationalArena;
+#[cfg(feature = "deser")]
+use serde::{Deserialize, Serialize};
+
+#[cfg(feature = "par_iter")]
+use rayon::prelude::*;
 
 use crate::{Node, NodeId};
 
@@ -35,6 +33,9 @@ impl<T> Arena<T> {
     pub fn new() -> Arena<T> {
         Self::default()
     }
+
+    /// Create a new empty `Arena` with pre-allocated memory for `n` items.
+    pub fn with_capacity(n: usize) -> Arena<T> { Self { nodes: GenerationalArena::with_capacity(n) } }
 
     /// Creates a new node from its associated data.
     ///
@@ -171,8 +172,8 @@ impl<T> Arena<T> {
     /// assert_eq!(iter.next().map(|node| *node.get()), Some("foo"));
     /// assert_eq!(iter.next().map(|node| *node.get()), None);
     /// ```
-    pub fn iter(&self) -> impl Iterator<Item = &Node<T>> {
-        self.nodes.iter().map(|pair|pair.1)
+    pub fn iter(&self) -> impl Iterator<Item=&Node<T>> {
+        self.nodes.iter().map(|pair| pair.1)
     }
 }
 
