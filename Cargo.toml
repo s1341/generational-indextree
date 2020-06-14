@@ -18,8 +18,8 @@ deser = [ "serde" ]
 std = []
 
 [dependencies]
-generational-arena = "0.2.7"
-serde = { version = "1.0.106", features = ["derive"], optional = true }
+generational-arena = "0.2.8"
+serde = { version = "1.0.110", features = ["derive"], optional = true }
 
 [[example]]
 name = "simple"
