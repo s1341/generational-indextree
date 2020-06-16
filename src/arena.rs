@@ -145,6 +145,39 @@ impl<T> Arena<T> {
         self.nodes.get_mut(id.get_index())
     }
 
+    /// Get a pair of exclusive references to the elements at index `i1` and `i2` if it is in the
+    /// arena.
+    ///
+    /// If the element at index `i1` or `i2` is not in the arena, then `None` is returned for this
+    /// element.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `i1` and `i2` are pointing to the same item of the arena.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use generational_indextree::Arena;
+    ///
+    /// let mut arena = Arena::new();
+    /// let idx1 = arena.new_node("foo");
+    /// let idx2 = arena.new_node("bar");
+    ///
+    /// {
+    ///     let (item1, item2) = arena.get2_mut(idx1, idx2);
+    ///
+    ///     *item1.unwrap().get_mut() = "jig";
+    ///     *item2.unwrap().get_mut() = "saw";
+    /// }
+    ///
+    /// assert_eq!(arena[idx1].get(), &"jig");
+    /// assert_eq!(arena[idx2].get(), &"saw");
+    /// ```
+    pub fn get2_mut(&mut self, i1: NodeId, i2: NodeId) -> (Option<&mut Node<T>>, Option<&mut Node<T>>) {
+        self.nodes.get2_mut(i1.get_index(), i2.get_index())
+    }
+
     /// Returns an iterator of all nodes in the arena in storage-order.
     ///
     /// # Examples
