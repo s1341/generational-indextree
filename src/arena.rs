@@ -208,6 +208,23 @@ impl<T> Arena<T> {
     pub fn iter(&self) -> impl Iterator<Item=&Node<T>> {
         self.nodes.iter().map(|pair| pair.1)
     }
+
+    /// Returns an iterator of all pairs (NodeId, &Node<T>) in the arena in storage-order.
+    ///
+    /// ```
+    /// # use generational_indextree::Arena;
+    /// let mut arena = Arena::new();
+    /// let _foo = arena.new_node("foo");
+    /// let _bar = arena.new_node("bar");
+    ///
+    /// let mut iter = arena.iter_pairs();
+    /// assert_eq!(iter.next().map(|node| (node.0, *node.1.get())), Some((_foo, "foo")));
+    /// assert_eq!(iter.next().map(|node| (node.0, *node.1.get())), Some((_bar, "bar")));
+    /// assert_eq!(iter.next().map(|node| (node.0, *node.1.get())), None);
+    /// ```
+    pub fn iter_pairs(&self) -> impl Iterator<Item=(NodeId, &Node<T>)> {
+        self.nodes.iter().map(|pair| (NodeId::from_index(pair.0), pair.1))
+    }
 }
 
 impl<T> Default for Arena<T> {
