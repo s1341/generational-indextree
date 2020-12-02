@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "par_iter")]
 use rayon::prelude::*;
 
-use crate::{Node, NodeId};
+use crate::{node::NodeData, Node, NodeId};
 
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "deser", derive(Deserialize, Serialize))]
@@ -266,3 +266,21 @@ impl<T: PartialEq> PartialEq for Arena<T>
 }
 
 impl<T: PartialEq> Eq for Arena<T> {}
+
+#[test]
+fn reuse_node() {
+    let mut arena = Arena::new();
+    let n1_id = arena.new_node("1");
+    let n2_id = arena.new_node("2");
+    let n3_id = arena.new_node("3");
+    n1_id.remove(&mut arena);
+    n2_id.remove(&mut arena);
+    n3_id.remove(&mut arena);
+    let n1_id = arena.new_node("1");
+    let n2_id = arena.new_node("2");
+    let n3_id = arena.new_node("3");
+    assert_eq!(n1_id.index0(), 0);
+    assert_eq!(n2_id.index0(), 1);
+    assert_eq!(n3_id.index0(), 2);
+    assert_eq!(arena.nodes.len(), 3);
+}
