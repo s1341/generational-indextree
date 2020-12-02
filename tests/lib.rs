@@ -148,7 +148,7 @@ fn is_removed() {
     let arena = &mut Arena::new();
     let n0 = arena.new_node(0);
     n0.remove(arena);
-    assert!(n0.is_removed(arena));
+    assert_eq!(arena.count(),0);
 }
 
 #[test]
@@ -166,21 +166,4 @@ fn insert_removed_node() {
     assert!(n2.checked_insert_after(n1, &mut arena).is_err());
     assert!(n1.checked_insert_before(n2, &mut arena).is_err());
     assert!(n2.checked_insert_before(n1, &mut arena).is_err());
-}
-
-#[test]
-fn retrieve_node_id() {
-    let mut arena = Arena::new();
-    let n1_id = arena.new_node("1");
-    let n2_id = arena.new_node("2");
-    let n3_id = arena.new_node("3");
-    let n1 = arena.get(n1_id).unwrap();
-    let n2 = arena.get(n2_id).unwrap();
-    let n3 = arena.get(n3_id).unwrap();
-    let retrieved_n1_id = arena.get_node_id(n1).unwrap();
-    let retrieved_n2_id = arena.get_node_id(n2).unwrap();
-    let retrieved_n3_id = arena.get_node_id(n3).unwrap();
-    assert_eq!(retrieved_n1_id, n1_id);
-    assert_eq!(retrieved_n2_id, n2_id);
-    assert_eq!(retrieved_n3_id, n3_id);
 }

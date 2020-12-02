@@ -42,3 +42,12 @@ let b = arena.new_node(2);
 assert!(a.append(b, arena).is_ok());
 assert_eq!(b.ancestors(arena).into_iter().count(), 2);
 ```
+
+## Change log
+
+version | date        | Change
+---     | ---         | ---
+1.1.2   | 02-12-2020  | Resync to indextree version 4.3.1
+1.1.1   | 20-06-2020  | Resync to indextree version 4.1.0
+1.1.0   | 16-06-2020  | Resync to indextree version 4.0.0
+1.0.0   | 05-04-2020  | For of indextree, but using GenerationArena

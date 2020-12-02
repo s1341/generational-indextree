@@ -19,7 +19,7 @@ std = []
 
 [dependencies]
 generational-arena = "0.2.8"
-serde = { version = "1.0.115", features = ["derive"], optional = true }
+serde = { version = "1.0.117", features = ["derive"], optional = true }
 
 [[example]]
 name = "simple"

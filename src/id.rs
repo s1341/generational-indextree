@@ -911,7 +911,7 @@ impl NodeId {
     /// # Examples
     ///
     /// ```
-    /// # use indextree::Arena;
+    /// # use generational_indextree::Arena;
     /// # let mut arena = Arena::new();
     /// # let n1 = arena.new_node("1");
     /// # let n1_1 = arena.new_node("1_1");
@@ -945,15 +945,15 @@ impl NodeId {
     pub fn remove_subtree<T>(self, arena: &mut Arena<T>) {
         self.detach(arena);
 
-        // use a preorder traversal to remove node.
-        let mut cursor = Some(self);
-        while let Some(id) = cursor {
-            arena.free_node(id);
-            let node = &arena[id];
-            cursor = node
-                .first_child
-                .or(node.next_sibling)
-                .or_else(|| node.parent.and_then(|p| arena[p].next_sibling));
-        }
+        // // use a preorder traversal to remove node.
+        // let mut cursor = Some(self);
+        // while let Some(id) = cursor {
+        //     arena.free_node(id);
+        //     let node = &arena[id];
+        //     cursor = node
+        //         .first_child
+        //         .or(node.next_sibling)
+        //         .or_else(|| node.parent.and_then(|p| arena[p].next_sibling));
+        // }
     }
 }
