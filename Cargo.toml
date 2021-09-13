@@ -14,11 +14,11 @@ edition = "2018"
 
 [features]
 default = ["std"]
-deser = [ "serde" ]
+deser = [ "serde", "generational-arena/serde" ]
 std = []
 
 [dependencies]
-generational-arena = "0.2.8"
+generational-arena = { git = "https://github.com/s1341/generational-arena", branch = "add_shrink_to_fit" }
 serde = { version = "1.0.117", features = ["derive"], optional = true }
 
 [[example]]
