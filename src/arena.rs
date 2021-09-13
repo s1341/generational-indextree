@@ -225,6 +225,11 @@ impl<T> Arena<T> {
     pub fn iter_pairs(&self) -> impl Iterator<Item=(NodeId, &Node<T>)> {
         self.nodes.iter().map(|pair| (NodeId::from_index(pair.0), pair.1))
     }
+    
+    /// Shrinks the internal arena to fit the nodes in use.
+    pub fn shrink_to_fit(&mut self) {
+        self.nodes.shrink_to_fit()
+    }
 }
 
 impl<T> Default for Arena<T> {
