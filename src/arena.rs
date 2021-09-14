@@ -230,6 +230,11 @@ impl<T> Arena<T> {
     pub fn shrink_to_fit(&mut self) {
         self.nodes.shrink_to_fit()
     }
+    
+    /// Clear the internal arena, removing all nodes.
+    pub fn clear(&mut self) {
+        self.nodes.clear()
+    }
 }
 
 impl<T> Default for Arena<T> {
